@@ -44,4 +44,7 @@ interface ApiService {
     @DELETE("api/student/{id}")
     suspend fun deleteStudent(@Path("id") id: Int): Response<Unit>
 
+    @GET("api/student/course/{courseId}")
+    suspend fun getStudentsByCourse(@Path("courseId") courseId: Int): List<Student>
+
 }

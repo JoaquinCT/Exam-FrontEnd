@@ -1,9 +1,6 @@
 package com.una.exam_frontend.interfaces
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.una.exam_frontend.models.Course
 
 @Dao
@@ -12,8 +9,20 @@ interface CourseDao {
     suspend fun getAll(): List<Course>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(events: List<Course>)
+    suspend fun insertAll(courses: List<Course>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(course: Course)
+
+    @Delete
+    suspend fun delete(course: Course)
 
     @Query("DELETE FROM Courses")
     suspend fun clearAll()
+
+    @Update
+    suspend fun update(course: Course)
+
+    @Query("SELECT * FROM Courses WHERE id = :courseId LIMIT 1")
+    suspend fun getById(courseId: Int): Course?
 }
