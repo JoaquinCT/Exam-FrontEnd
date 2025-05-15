@@ -45,3 +45,37 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+/*
+@Composable
+fun MainActivityContent(courses: List<Course>, onAddCourse: () -> Unit, onEdit: (Course) -> Unit, onDelete: (Course) -> Unit) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Text("Lista de Cursos", style = MaterialTheme.typography.headlineMedium)
+
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(courses) { course ->
+                Card(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(course.name, style = MaterialTheme.typography.titleLarge)
+                        Text(course.description)
+                        Text("Horario: ${course.schedule}")
+                        Text("Profesor: ${course.professor}")
+                        Row {
+                            Button(onClick = { onEdit(course) }) {
+                                Text("Editar")
+                            }
+                            Spacer(Modifier.width(8.dp))
+                            Button(onClick = { onDelete(course) }) {
+                                Text("Eliminar")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Button(onClick = onAddCourse, modifier = Modifier.fillMaxWidth()) {
+            Text("Agregar Curso")
+        }
+    }
+}
+*/
