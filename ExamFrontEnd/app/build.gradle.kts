@@ -63,7 +63,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     // **Navegación Compose**: implementación real de AndroidX Navigation Compose
-    implementation("androidx.navigation:navigation-compose:2.9.0") // última estable (May 07, 2025) :contentReference[oaicite:1]{index=1}
+    implementation("androidx.navigation:navigation-compose:2.9.0")
 
     // Pruebas
     testImplementation(libs.junit)
