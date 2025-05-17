@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.una.exam_frontend" />
+                  <option name="mobileSdkAppId" value="1:237822109022:android:beb998139fef7b30b55bcf" />
+                  <option name="projectId" value="exam-front-f7905" />
+                  <option name="projectNumber" value="237822109022" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

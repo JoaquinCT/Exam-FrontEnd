@@ -4,11 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.una.exam_frontend.interfaces.EventDao
+import com.una.exam_frontend.interfaces.CourseDao
+import com.una.exam_frontend.interfaces.StudentDao
 
 @Database(entities = [Course::class, Student::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun eventDao(): EventDao
+    abstract fun courseDao(): CourseDao
+    abstract fun studentDao(): StudentDao
 
     companion object {
         @Volatile
@@ -21,7 +23,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "App_database"
                 )
-                    .fallbackToDestructiveMigration()
+                    .fallbackToDestructiveMigration(false)
                     .build()
                 INSTANCE = instance
                 instance

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "237822109022",
+    "project_id": "exam-front-f7905",
+    "storage_bucket": "exam-front-f7905.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:237822109022:android:beb998139fef7b30b55bcf",
+        "android_client_info": {
+          "package_name": "com.una.exam_frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAilmGj1Xf9F_OPZWIW9zapP3aBz_DFl-s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
