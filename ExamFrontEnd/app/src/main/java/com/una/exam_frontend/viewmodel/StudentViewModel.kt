@@ -12,7 +12,10 @@ class StudentViewModel(private val repository: StudentRepository) : ViewModel() 
     private val _students = MutableStateFlow<List<Student>>(emptyList())
     val students: StateFlow<List<Student>> = _students
 
+    private var currentCourseId: Int = -1
+
     fun loadStudents(courseId: Int) {
+        currentCourseId = courseId
         viewModelScope.launch {
             _students.value = repository.getStudentsByCourse(courseId)
         }
@@ -25,10 +28,12 @@ class StudentViewModel(private val repository: StudentRepository) : ViewModel() 
         }
     }
 
-    fun deleteStudent(studentId: Int, courseId: Int) {
+    fun deleteStudent(studentId: Int) {
         viewModelScope.launch {
-            repository.deleteStudent(studentId, courseId)
-            loadStudents(courseId)
+            repository.deleteStudent(studentId)
+            if (currentCourseId != -1) {
+                loadStudents(currentCourseId)
+            }
         }
     }
 

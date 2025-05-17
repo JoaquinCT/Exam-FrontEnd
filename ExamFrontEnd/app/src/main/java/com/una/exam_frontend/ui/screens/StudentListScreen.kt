@@ -3,7 +3,6 @@
 package com.una.exam_frontend.ui.screens
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,11 +17,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.una.exam_frontend.interfaces.StudentDao
-import com.una.exam_frontend.viewmodel.StudentViewModel
-import com.una.exam_frontend.repository.StudentRepository
 import com.una.exam_frontend.models.AppDatabase
 import com.una.exam_frontend.models.Student
+import com.una.exam_frontend.repository.StudentRepository
+import com.una.exam_frontend.viewmodel.StudentViewModel
 
 @SuppressLint("RememberReturnType")
 @Composable
@@ -31,8 +29,9 @@ fun StudentListScreen(
     courseId: Int
 ) {
     val context = LocalContext.current
-    val db = remember { AppDatabase.getInstance(context) }
-    val repository = remember { StudentRepository(context = context, studentDao = db.studentDao()) }
+    val db = AppDatabase.getInstance(context)
+    val repository = remember { StudentRepository(context, db.studentDao()) }
+
     val viewModel: StudentViewModel = viewModel(factory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return StudentViewModel(repository) as T
@@ -41,7 +40,10 @@ fun StudentListScreen(
 
     val students by viewModel.students.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
+
     var newStudentName by remember { mutableStateOf("") }
+    var newStudentEmail by remember { mutableStateOf("") }
+    var newStudentPhone by remember { mutableStateOf("") }
 
     LaunchedEffect(courseId) {
         viewModel.loadStudents(courseId)
@@ -54,8 +56,16 @@ fun StudentListScreen(
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
-            Text("Estudiantes", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(16.dp))
+        Column(modifier = Modifier
+            .padding(padding)
+            .fillMaxSize()) {
+
+            Text(
+                "Estudiantes",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(16.dp)
+            )
+
             LazyColumn {
                 items(students.size) { idx ->
                     val student = students[idx]
@@ -65,48 +75,78 @@ fun StudentListScreen(
                             .padding(8.dp)
                             .clickable { navController.navigate("studentDetail/${student.id}") }
                     ) {
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(student.name)
-                            IconButton(onClick = { viewModel.deleteStudent(student.id, courseId) }) {
-                                Icon(Icons.Default.Delete, contentDescription = "Eliminar")
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    student.name,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                IconButton(onClick = {
+                                    viewModel.deleteStudent(student.id)
+                                }) {
+                                    Icon(Icons.Default.Delete, contentDescription = "Eliminar")
+                                }
                             }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text("Email: ${student.email}", style = MaterialTheme.typography.bodyMedium)
+                            Text("Teléfono: ${student.phone}", style = MaterialTheme.typography.bodyMedium)
                         }
                     }
                 }
             }
         }
+
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { showDialog = false },
                 title = { Text("Nuevo Estudiante") },
                 text = {
-                    OutlinedTextField(
-                        value = newStudentName,
-                        onValueChange = { newStudentName = it },
-                        label = { Text("Nombre del estudiante") }
-                    )
+                    Column {
+                        Text("Curso ID: $courseId", style = MaterialTheme.typography.bodyMedium)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = newStudentName,
+                            onValueChange = { newStudentName = it },
+                            label = { Text("Nombre del estudiante") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = newStudentEmail,
+                            onValueChange = { newStudentEmail = it },
+                            label = { Text("Email") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = newStudentPhone,
+                            onValueChange = { newStudentPhone = it },
+                            label = { Text("Teléfono") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 },
                 confirmButton = {
                     Button(onClick = {
                         if (newStudentName.isNotBlank()) {
-                            val email = ""
-                            val phone = ""
                             viewModel.addStudent(
                                 Student(
-                                    id = 0, // Room y el backend asignan el ID
-                                    name = newStudentName,
-                                    email = email,
-                                    phone = phone,
+                                    id = 0,
+                                    name = newStudentName.trim(),
+                                    email = newStudentEmail.trim(),
+                                    phone = newStudentPhone.trim(),
                                     courseId = courseId,
-
                                 )
                             )
                             newStudentName = ""
+                            newStudentEmail = ""
+                            newStudentPhone = ""
                             showDialog = false
                         }
                     }) { Text("Agregar") }
@@ -118,5 +158,3 @@ fun StudentListScreen(
         }
     }
 }
-
-

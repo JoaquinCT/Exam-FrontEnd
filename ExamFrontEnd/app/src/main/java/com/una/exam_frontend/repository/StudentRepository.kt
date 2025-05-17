@@ -1,82 +1,42 @@
 package com.una.exam_frontend.repository
 
 import android.content.Context
+import com.una.exam_frontend.interfaces.StudentDao
 import com.una.exam_frontend.models.Student
 import com.una.exam_frontend.network.RetrofitInstance
-import com.una.exam_frontend.interfaces.StudentDao
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
-
-class StudentRepository(
-    private val context: Context,
-    private val studentDao: StudentDao
-) {
+class StudentRepository(context: Context, studentDao: StudentDao) {
     private val api = RetrofitInstance.api
 
-    suspend fun getStudentsByCourse(courseId: Int): List<Student> = withContext(Dispatchers.IO) {
-        return@withContext if (isNetworkAvailable(context)) {
-            try {
-                val students = api.getStudentsByCourse(courseId)
-                // Guarda los datos en local
-                studentDao.clearAllByCourse(courseId)
-                studentDao.insertAll(students)
-                students
-            } catch (e: Exception) {
-                // Si falla el API, usa local
-                studentDao.getByCourse(courseId)
-            }
-        } else {
-            studentDao.getByCourse(courseId)
+    suspend fun getStudentsByCourse(courseId: Int): List<Student> {
+        return try {
+            api.getStudentsByCourse(courseId)
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 
-    suspend fun addStudent(student: Student) = withContext(Dispatchers.IO) {
-        if (isNetworkAvailable(context)) {
+    suspend fun addStudent(student: Student) {
+        try {
             api.createStudent(student)
-            // Actualiza local
-            val updated = api.getStudentsByCourse(student.courseId)
-            studentDao.clearAllByCourse(student.courseId)
-            studentDao.insertAll(updated)
-        } else {
-            // Solo local
-            studentDao.insertAll(listOf(student))
+        } catch (_: Exception) {
+            // Manejar error o dejar vacío
         }
     }
 
-    suspend fun deleteStudent(studentId: Int, courseId: Int) = withContext(Dispatchers.IO) {
-        if (isNetworkAvailable(context)) {
+    suspend fun deleteStudent(studentId: Int) {
+        try {
             api.deleteStudent(studentId)
-            val updated = api.getStudentsByCourse(courseId)
-            studentDao.clearAllByCourse(courseId)
-            studentDao.insertAll(updated)
-        } else {
-            // Solo local
-            val all = studentDao.getByCourse(courseId).filter { it.id != studentId }
-            studentDao.clearAllByCourse(courseId)
-            studentDao.insertAll(all)
+        } catch (_: Exception) {
+            // Manejar error o dejar vacío
         }
     }
 
-    suspend fun updateStudent(student: Student) = withContext(Dispatchers.IO) {
-        if (isNetworkAvailable(context)) {
+    suspend fun updateStudent(student: Student) {
+        try {
             api.updateStudent(student.id, student)
-            val updated = api.getStudentsByCourse(student.courseId)
-            studentDao.clearAllByCourse(student.courseId)
-            studentDao.insertAll(updated)
-        } else {
-            // Solo local
-            val all = studentDao.getByCourse(student.courseId).map { if (it.id == student.id) student else it }
-            studentDao.clearAllByCourse(student.courseId)
-            studentDao.insertAll(all)
+        } catch (_: Exception) {
+            // Manejar error o dejar vacío
         }
-    }
-
-    private fun isNetworkAvailable(context: Context): Boolean {
-        return RetrofitInstance
-            .javaClass
-            .getDeclaredMethod("isNetworkAvailable", Context::class.java)
-            .apply { isAccessible = true }
-            .invoke(RetrofitInstance, context) as Boolean
     }
 }
